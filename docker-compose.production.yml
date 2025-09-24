@@ -62,7 +62,7 @@ services:
       - "5433:5432"
       
   rag_api:
-    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    image: u2sebau2/librechat-rag-custom:latest
     container_name: rag_api
     environment:
       - DB_HOST=vectordb
