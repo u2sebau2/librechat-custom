@@ -1,15 +1,21 @@
-# Dockerfile para RAG API con modificaciones personalizadas
+# Usa la imagen base oficial de RAG API
 FROM ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
 
-# Copiar archivos modificados del RAG API
+# Cambia al usuario root temporalmente para copiar archivos
+USER root
+
+# Copia los archivos modificados de RAG API
+# IMPORTANTE: Primero debes copiar estos archivos desde tu LibreChat original
 COPY --chown=1000:1000 rag_api/hybrid_search/models.py /app/app/models.py
 COPY --chown=1000:1000 rag_api/hybrid_search/document_routes.py /app/app/routes/document_routes.py
 COPY --chown=1000:1000 rag_api/hybrid_search/hybrid_search.py /app/app/services/hybrid_search.py
 COPY --chown=1000:1000 rag_api/hybrid_search/config.py /app/app/config.py
 COPY --chown=1000:1000 rag_api/hybrid_search/async_pg_vector.py /app/app/services/vector_store/async_pg_vector.py
 
-# Puerto de la aplicación
+# Regresa al usuario original
+USER 1000
+
+# Puerto por defecto
 EXPOSE 8000
 
-# Comando por defecto
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# El CMD ya está definido en la imagen base
