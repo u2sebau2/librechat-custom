@@ -152,8 +152,9 @@ class HybridSearchService:
         # Fix common encoding issues first
         query = query.encode('utf-8', errors='ignore').decode('utf-8')
 
-        # Keep Spanish characters - use proper UTF-8 characters
-        cleaned = re.sub(r'[^a-zA-Z0-9áéíóúñüçÁÉÍÓÚÑÜÇ\s]', ' ', query)
+        # Keep Spanish characters AND Unicode citation markers (U+E200-U+E2FF range)
+        # This preserves LibreChat citation format like \ue202turn0file0
+        cleaned = re.sub(r'[^a-zA-Z0-9áéíóúñüçÁÉÍÓÚÑÜÇ\s\uE200-\uE2FF]', ' ', query)
         cleaned = ' '.join(cleaned.split())
         return cleaned.lower()
 
