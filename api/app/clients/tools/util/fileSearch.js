@@ -181,9 +181,18 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
           };
         });
 
+        // Create file mapping for consistent numbering (each unique file gets one number)
+        const uniqueFiles = [...new Set(formattedResults.map(result => result.filename))];
+        const fileIndexMap = {};
+        uniqueFiles.forEach((filename, index) => {
+          fileIndexMap[filename] = index;
+        });
+
         // Format the response string for display
         const formattedString = formattedResults
-        .map((result, index) => {
+        .map((result) => {
+          const fileIndex = fileIndexMap[result.filename]; // Use file-based index, not result index
+          
           let searchInfo = '';
           if (result.fusion_score !== null) {
             searchInfo = `\nSearch Type: Hybrid (Fusion Score: ${result.fusion_score.toFixed(4)})`;
@@ -205,7 +214,7 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
             additionalInfo += `\nSource URL: ${result.metadata.page_url}`;
           }
 
-          return `File: ${result.filename}\nAnchor: \\ue202turn0file${index} (${result.filename})\nRelevance: ${(1.0 - result.distance).toFixed(4)}${searchInfo}${chunkInfo}${additionalInfo}\nContent: ${result.content}\n`;
+          return `File: ${result.filename}\nAnchor: \\ue202turn0file${fileIndex} (${result.filename})\nRelevance: ${(1.0 - result.distance).toFixed(4)}${searchInfo}${chunkInfo}${additionalInfo}\nContent: ${result.content}\n`;
         })
         .join('\n---\n');
 
