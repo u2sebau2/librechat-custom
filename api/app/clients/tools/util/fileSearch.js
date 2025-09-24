@@ -208,12 +208,12 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
             additionalInfo += `\nSource URL: ${result.metadata.page_url}`;
           }
 
-          return `File: ${result.filename}\nAnchor: \\ue202turn0file${index} (${result.filename})\nRelevance: ${(1.0 - result.distance).toFixed(4)}${searchInfo}${chunkInfo}${additionalInfo}\nContent: ${result.content}\n`;
+          return `File: ${result.filename}\nRelevance: ${(1.0 - result.distance).toFixed(4)}${searchInfo}${chunkInfo}${additionalInfo}\nContent: ${result.content}\n`;
         })
         .join('\n---\n');
 
-        // Create optimized sources for the artifact - BACK TO ORIGINAL: One entry per chunk
-        // This ensures perfect 1:1 mapping: turn0file0 = sources[0], turn0file1 = sources[1], etc.
+        // Create optimized sources for the artifact  
+        // Simple mapping: each search result becomes one source entry
         const sources = formattedResults.map((result) => ({
           type: 'file',
           fileId: result.file_id,
@@ -269,12 +269,12 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
       - **bm25**: Uses keyword-based search with BM25 algorithm
 
       **CITE FILE SEARCH RESULTS:**
-      Use anchor markers immediately after statements derived from file content. Reference the filename in your text:
-      - File citation: "The document.pdf states that... \\ue202turn0file0"
-      - Page reference: "According to report.docx... \\ue202turn0file1"
-      - Multi-file: "Multiple sources confirm... \\ue200\\ue202turn0file0\\ue202turn0file1\\ue201"
+      Always reference the source files using markdown format with the exact filename shown in the results:
+      - Single source: "According to [fine_tunning_v2.txt], the training process..."
+      - Multiple sources: "Both [log_fine_tunning.txt] and [especificaciones.txt] indicate..."
+      - Specific quotes: "As stated in [contexto.txt]: 'the model requires...'"
 
-      **ALWAYS mention the filename in your text before the citation marker. NEVER use markdown links or footnotes.**`,
+      **ALWAYS use square brackets [filename.ext] to reference source files. Use the exact filename from the File: field in the search results.**`,
       schema: z.object({
         query: z
         .string()
