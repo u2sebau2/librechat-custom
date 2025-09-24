@@ -73,8 +73,8 @@ services:
     env_file:
       - .env
     volumes:
-      # Volumen persistente para uploads de RAG API
-      - ./rag_uploads:/app/uploads
+      # Compartir la misma carpeta uploads con LibreChat
+      - ./uploads:/app/uploads
     ports:
       - "3333:8000"
 

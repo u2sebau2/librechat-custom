@@ -1,30 +1,25 @@
 #!/bin/bash
 
-echo "🔧 ARREGLANDO PERMISOS RAG API"
-echo "==============================="
+echo "🔧 ARREGLANDO PERMISOS PARA TODOS LOS SERVICIOS"
+echo "================================================"
 echo ""
 
-# Crear carpeta rag_uploads con permisos
-echo "📁 Creando carpeta rag_uploads..."
-sudo mkdir -p rag_uploads
-sudo chmod -R 777 rag_uploads
-echo "✅ Carpeta rag_uploads creada con permisos 777"
-
-# Verificar otras carpetas
-echo ""
-echo "🔍 Verificando otras carpetas..."
+# Crear y verificar todas las carpetas necesarias
+echo "📁 Creando directorios con permisos..."
 for dir in logs uploads images data-node meili_data_v1.12; do
     if [ ! -d "$dir" ]; then
         sudo mkdir -p "$dir"
         echo "  ✅ Creada: $dir"
+    else
+        echo "  ⏭️  Ya existe: $dir"
     fi
     sudo chmod -R 777 "$dir"
-    echo "  ✅ Permisos aplicados: $dir"
+    echo "  ✅ Permisos 777 aplicados: $dir"
 done
 
 echo ""
 echo "📋 Estado de carpetas:"
-ls -la | grep -E "logs|uploads|images|rag_uploads"
+ls -la | grep -E "logs|uploads|images"
 
 echo ""
 echo "🔄 Reiniciando servicios..."
