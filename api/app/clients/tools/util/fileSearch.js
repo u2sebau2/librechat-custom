@@ -218,32 +218,50 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
         })
         .join('\n---\n');
 
-        // Create optimized sources for the artifact
-        const sources = formattedResults.map((result) => ({
-          type: 'file',
-          fileId: result.file_id,
-          content: result.content,
-          fileName: result.filename,
-          relevance: 1.0 - result.distance,
-          pages: result.page ? [result.page] : [],
-          pageRelevance: result.page ? { [result.page]: 1.0 - result.distance } : {},
-          // Only include essential metadata
-          metadata: {
-            chunk_index: result.chunk_index,
-            total_chunks: result.total_chunks,
-            // Only add these if they exist
-            ...(result.metadata.last_modified && { last_modified: result.metadata.last_modified }),
-                                                          ...(result.metadata.page_url && { page_url: result.metadata.page_url }),
-                                                          ...(result.metadata.source && { source: result.metadata.source }),
-          },
-          // Only include search-specific data for hybrid search
-          ...(search_type === 'hybrid' && {
-            searchType: search_type,
-            fusionScore: result.fusion_score,
-            semanticRank: result.semantic_rank,
-            bm25Rank: result.bm25_rank,
-          }),
-        }));
+        // Create optimized sources for the artifact - ORGANIZED BY FILE INDEX
+        // First, create sources grouped by unique file to match the anchor numbering
+        const sourcesByFile = {};
+        
+        // Group results by filename
+        formattedResults.forEach((result) => {
+          const fileIndex = fileIndexMap[result.filename];
+          if (!sourcesByFile[fileIndex]) {
+            sourcesByFile[fileIndex] = [];
+          }
+          sourcesByFile[fileIndex].push({
+            type: 'file',
+            fileId: result.file_id,
+            content: result.content,
+            fileName: result.filename,
+            relevance: 1.0 - result.distance,
+            pages: result.page ? [result.page] : [],
+            pageRelevance: result.page ? { [result.page]: 1.0 - result.distance } : {},
+            // Only include essential metadata
+            metadata: {
+              chunk_index: result.chunk_index,
+              total_chunks: result.total_chunks,
+              // Only add these if they exist
+              ...(result.metadata.last_modified && { last_modified: result.metadata.last_modified }),
+              ...(result.metadata.page_url && { page_url: result.metadata.page_url }),
+              ...(result.metadata.source && { source: result.metadata.source }),
+            },
+            // Only include search-specific data for hybrid search
+            ...(search_type === 'hybrid' && {
+              searchType: search_type,
+              fusionScore: result.fusion_score,
+              semanticRank: result.semantic_rank,
+              bm25Rank: result.bm25_rank,
+            }),
+          });
+        });
+        
+        // Convert to flat array ordered by file index (turn0file0 = sources[0], turn0file1 = sources[1], etc.)
+        const sources = [];
+        for (let i = 0; i < uniqueFiles.length; i++) {
+          if (sourcesByFile[i]) {
+            sources.push(...sourcesByFile[i]);
+          }
+        }
 
         logger.debug(`[${Tools.file_search}] Found ${formattedResults.length} results across ${file_ids.length} files`);
 
