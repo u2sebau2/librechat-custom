@@ -181,18 +181,11 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
           };
         });
 
-        // Create file mapping for consistent numbering (each unique file gets one number)
-        // Use ALPHABETICAL ORDER to ensure consistency across different searches in same conversation
-        const uniqueFiles = [...new Set(formattedResults.map(result => result.filename))].sort();
-        const fileIndexMap = {};
-        uniqueFiles.forEach((filename, index) => {
-          fileIndexMap[filename] = index;
-        });
-
-        // Format the response string for display
+        // ORIGINAL LOGIC: Each chunk gets sequential index (0,1,2,3...)
+        // Keep natural order from RAG (by relevance)
         const formattedString = formattedResults
-        .map((result) => {
-          const fileIndex = fileIndexMap[result.filename]; // Use file-based index, not result index
+        .map((result, index) => {
+          // Each chunk gets unique sequential number: turn0file0, turn0file1, turn0file2...
           
           let searchInfo = '';
           if (result.fusion_score !== null) {
@@ -215,57 +208,37 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
             additionalInfo += `\nSource URL: ${result.metadata.page_url}`;
           }
 
-          return `File: ${result.filename}\nAnchor: \\ue202turn0file${fileIndex} (${result.filename})\nRelevance: ${(1.0 - result.distance).toFixed(4)}${searchInfo}${chunkInfo}${additionalInfo}\nContent: ${result.content}\n`;
+          return `File: ${result.filename}\nAnchor: \\ue202turn0file${index} (${result.filename})\nRelevance: ${(1.0 - result.distance).toFixed(4)}${searchInfo}${chunkInfo}${additionalInfo}\nContent: ${result.content}\n`;
         })
         .join('\n---\n');
 
-        // Create optimized sources for the artifact - ONE ENTRY PER UNIQUE FILE
-        // Frontend expects sources[N] to correspond directly to turn0fileN
-        const sourcesByFile = {};
-        
-        // Group results by filename and create ONE representative entry per file
-        formattedResults.forEach((result) => {
-          const fileIndex = fileIndexMap[result.filename];
-          if (!sourcesByFile[fileIndex]) {
-            // Create one entry per unique file (use first/best result for that file)
-            sourcesByFile[fileIndex] = {
-              type: 'file',
-              fileId: result.file_id,
-              content: result.content, // Use first chunk content as representative
-              fileName: result.filename,
-              relevance: 1.0 - result.distance,
-              pages: result.page ? [result.page] : [],
-              pageRelevance: result.page ? { [result.page]: 1.0 - result.distance } : {},
-              // Aggregate metadata from all chunks of this file
-              metadata: {
-                chunk_index: result.chunk_index,
-                total_chunks: result.total_chunks,
-                // Only add these if they exist
-                ...(result.metadata.last_modified && { last_modified: result.metadata.last_modified }),
-                ...(result.metadata.page_url && { page_url: result.metadata.page_url }),
-                ...(result.metadata.source && { source: result.metadata.source }),
-              },
-              // Only include search-specific data for hybrid search
-              ...(search_type === 'hybrid' && {
-                searchType: search_type,
-                fusionScore: result.fusion_score,
-                semanticRank: result.semantic_rank,
-                bm25Rank: result.bm25_rank,
-              }),
-            };
-          }
-          // If file already exists in sources, could update with better relevance or aggregate data
-          // For now, keep the first occurrence (could be enhanced to keep best relevance)
-        });
-        
-        // Create sources array with exactly one entry per file, ordered by fileIndex
-        // This ensures sources[0] = turn0file0, sources[1] = turn0file1, etc.
-        const sources = [];
-        for (let i = 0; i < uniqueFiles.length; i++) {
-          if (sourcesByFile[i]) {
-            sources.push(sourcesByFile[i]);
-          }
-        }
+        // Create optimized sources for the artifact - BACK TO ORIGINAL: One entry per chunk
+        // This ensures perfect 1:1 mapping: turn0file0 = sources[0], turn0file1 = sources[1], etc.
+        const sources = formattedResults.map((result) => ({
+          type: 'file',
+          fileId: result.file_id,
+          content: result.content,
+          fileName: result.filename,
+          relevance: 1.0 - result.distance,
+          pages: result.page ? [result.page] : [],
+          pageRelevance: result.page ? { [result.page]: 1.0 - result.distance } : {},
+          // Only include essential metadata
+          metadata: {
+            chunk_index: result.chunk_index,
+            total_chunks: result.total_chunks,
+            // Only add these if they exist
+            ...(result.metadata.last_modified && { last_modified: result.metadata.last_modified }),
+            ...(result.metadata.page_url && { page_url: result.metadata.page_url }),
+            ...(result.metadata.source && { source: result.metadata.source }),
+          },
+          // Only include search-specific data for hybrid search
+          ...(search_type === 'hybrid' && {
+            searchType: search_type,
+            fusionScore: result.fusion_score,
+            semanticRank: result.semantic_rank,
+            bm25Rank: result.bm25_rank,
+          }),
+        }));
 
         logger.debug(`[${Tools.file_search}] Found ${formattedResults.length} results across ${file_ids.length} files`);
 
