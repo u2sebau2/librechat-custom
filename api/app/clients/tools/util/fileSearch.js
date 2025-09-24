@@ -269,12 +269,12 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
       - **bm25**: Uses keyword-based search with BM25 algorithm
 
       **CITE FILE SEARCH RESULTS:**
-      Always reference the source files using markdown format with the exact filename shown in the results:
-      - Single source: "According to [fine_tunning_v2.txt], the training process..."
-      - Multiple sources: "Both [log_fine_tunning.txt] and [especificaciones.txt] indicate..."
-      - Specific quotes: "As stated in [contexto.txt]: 'the model requires...'"
+      Always reference the source files using bold format with the exact filename shown in the results:
+      - Single source: "According to **fine_tunning_v2.txt**, the training process..."
+      - Multiple sources: "Both **log_fine_tunning.txt** and **especificaciones.txt** indicate..."
+      - Specific quotes: "As stated in **contexto.txt**: 'the model requires...'"
 
-      **ALWAYS use square brackets [filename.ext] to reference source files. Use the exact filename from the File: field in the search results.**`,
+      **ALWAYS use double asterisks **filename.ext** to make source filenames bold. Use the exact filename from the File: field in the search results.**`,
       schema: z.object({
         query: z
         .string()
