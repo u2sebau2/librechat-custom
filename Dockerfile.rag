@@ -12,6 +12,11 @@ COPY --chown=1000:1000 rag_api/hybrid_search/hybrid_search.py /app/app/services/
 COPY --chown=1000:1000 rag_api/hybrid_search/config.py /app/app/config.py
 COPY --chown=1000:1000 rag_api/hybrid_search/async_pg_vector.py /app/app/services/vector_store/async_pg_vector.py
 
+# Crear directorio uploads con permisos correctos
+RUN mkdir -p /app/uploads && \
+    chown -R 1000:1000 /app/uploads && \
+    chmod -R 777 /app/uploads
+
 # Regresa al usuario original
 USER 1000
 

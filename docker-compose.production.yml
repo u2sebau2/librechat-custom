@@ -72,6 +72,9 @@ services:
       - vectordb
     env_file:
       - .env
+    volumes:
+      # Volumen persistente para uploads de RAG API
+      - ./rag_uploads:/app/uploads
     ports:
       - "3333:8000"
 

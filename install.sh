@@ -21,6 +21,7 @@ directories=(
     "logs"
     "uploads"
     "images"
+    "rag_uploads"
     "data-node"
     "meili_data_v1.12"
 )
