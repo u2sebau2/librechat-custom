@@ -1,0 +1,75 @@
+# LibreChat Configuration
+version: 1.2.1
+
+
+
+defaultModel:
+  endpoint: "bedrock"
+  model: "us.anthropic.claude-sonnet-4-20250514-v1:0"
+
+# Interface configuration
+interface:
+  # ==================== CONFIGURACIÓN DE CONVERSACIONES ====================
+  # Disable multiple conversations feature (+ button to add conversations)
+  multiConvo: false
+
+  # Disable temporary chat feature (temporary chat toggle button)
+  temporaryChat: false
+
+  # Enable modular chat feature (allows switching between models/endpoints in same conversation)
+  modularChat: true
+
+  # ==================== FUNCIONALIDADES PARA ENDPOINTS DIRECTOS (BEDROCK) ====================
+  # ✅ Funcionalidades HABILITADAS para conversaciones directas
+  fileSearch: true        # DESHABILITADO - Solo file upload directo
+  webSearch: true          # Búsqueda web
+  fileCitations: true      # Citations de archivos (solo PDF)
+
+  # ❌ Funcionalidades DESHABILITADAS para conversaciones directas
+  runCode: false           # Deshabilitar ejecución de código
+  artifacts: false         # Deshabilitar artifacts (si existe esta opción)
+
+  # ==================== FUNCIONALIDADES GENERALES ====================
+  # Disable speech features
+  speechToText: false      # Disable microphone/speech-to-text
+  textToSpeech: false      # Disable text-to-speech/reading aloud
+
+  # Disable editing of agent messages (only allow editing user messages)
+  editAgentMessages: false
+
+# Include Nova Canvas in available tools
+includedTools:
+  - "nova-canvas"
+
+
+# Endpoints configuration
+endpoints:
+  # Configuración global de streaming para todos los endpoints
+  all:
+    streamRate: 0  # 0ms para streaming más rápido sin delays
+  
+  # Configuración para conversaciones directas con Bedrock
+  bedrock:
+    # Herramientas disponibles para conversaciones directas (solo Nova Canvas + búsquedas)
+    tools: ["nova-canvas"]
+    streamRate: 0  # Streaming sin delays para máxima fluidez
+
+  # Configuración para agentes
+  agents:
+    streamRate: 0  # Streaming rápido también para agentes
+    capabilities:
+      # ✅ Funcionalidades HABILITADAS para agentes
+      - "file_search"              # Búsqueda en archivos subidos
+      - "web_search"               # Búsqueda web
+      - "actions"                  # Acciones personalizadas
+      - "tools"                    # Herramientas personalizadas (Nova Canvas, etc.)
+      - "chain"                    # Encadenamiento de acciones
+      - "ocr"                      # OCR para documentos (legacy, ahora procesamiento nativo)
+      - "hide_sequential_outputs"  # Ocultar salidas secuenciales
+      - "end_after_tools"          # Terminar después de herramientas
+
+      # ❌ Funcionalidades DESHABILITADAS para agentes (según solicitud)
+      # - "artifacts"              # DESHABILITADO - No mostrar artifacts
+      # - "execute_code"           # DESHABILITADO - No ejecutar código
+
+      # 📝 NOTA: file upload está siempre disponible para agentes y endpoints directos

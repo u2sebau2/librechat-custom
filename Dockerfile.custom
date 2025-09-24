@@ -1,0 +1,34 @@
+# Dockerfile personalizado con todo pre-compilado
+FROM ghcr.io/danny-avila/librechat-dev:latest
+
+# Copiar todo el código ya compilado
+COPY --chown=node:node . /app
+
+# Copiar archivos compilados del frontend
+COPY --chown=node:node client/dist /app/client/dist
+
+# Copiar packages compilados
+COPY --chown=node:node packages/data-provider/dist /app/packages/data-provider/dist
+COPY --chown=node:node packages/client/dist /app/packages/client/dist
+COPY --chown=node:node packages/api/dist /app/packages/api/dist
+COPY --chown=node:node packages/data-schemas/dist /app/packages/data-schemas/dist
+
+# Instalar dependencias necesarias para AWS y patches
+RUN npm install --legacy-peer-deps \
+    @aws-sdk/client-s3 \
+    @aws-sdk/client-textract \
+    @aws-sdk/client-comprehend \
+    @aws-sdk/client-bedrock-runtime \
+    @langchain/aws@^0.1.15
+
+# Aplicar el patch de AWS
+RUN node /app/langchain-aws-citation-patch-v4.js
+
+# Configurar variables de entorno para optimización
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV UV_THREADPOOL_SIZE=128
+ENV NODE_NO_WARNINGS=1
+ENV HOST=0.0.0.0
+
+# Usar el comando del backend directamente (sin compilar)
+CMD ["npm", "run", "backend"]

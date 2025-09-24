@@ -1,0 +1,87 @@
+# Dependencias
+node_modules/
+package-lock.json
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Datos y logs
+data-node/
+meili_data/
+meili_data_v1.12/
+pgdata2/
+logs/
+*.log
+
+# Archivos de uploads e imágenes de usuarios
+uploads/
+images/
+!client/public/images/
+
+# Archivos temporales
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de backup
+*.bak
+*.backup
+modified_files/
+
+# Archivos de configuración local
+librechat.yaml.local
+
+# Archivos de certificados
+*.pem
+*.key
+*.crt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Docker volumes locales
+data/
+postgres-data/
+
+# Archivos de documentación temporal
+*.md.tmp
+NOVA_*.md
+BEDROCK_*.md
+CITATIONS_*.md
+INSTALL_*.md
+
+# Scripts temporales
+*.sh.tmp
+copy_modified_files.sh
+install-nova-canvas.sh
+
+# Archivos de patch temporales
+langchain-aws-citation-patch-*.js
+
+# Archivos de respaldo
+librechat_bkp.yaml
+docker-compose.override.yml.example
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.rar
+
+# Ejecutables
+cloudflared
