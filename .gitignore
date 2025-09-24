@@ -72,7 +72,9 @@ copy_modified_files.sh
 install-nova-canvas.sh
 
 # Archivos de patch temporales
-langchain-aws-citation-patch-*.js
+# langchain-aws-citation-patch-*.js
+# Mantener el patch v4 necesario para Bedrock
+!langchain-aws-citation-patch-v4.js
 
 # Archivos de respaldo
 librechat_bkp.yaml

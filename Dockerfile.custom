@@ -21,7 +21,7 @@ RUN npm install --legacy-peer-deps \
     @aws-sdk/client-bedrock-runtime \
     @langchain/aws@^0.1.15
 
-# Aplicar el patch de AWS
+# Aplicar el patch de AWS para citas de Bedrock
 RUN node /app/langchain-aws-citation-patch-v4.js
 
 # Configurar variables de entorno para optimización
