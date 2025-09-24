@@ -1,8 +1,6 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile.custom
+    image: u2sebau2/librechat-custom:latest
     container_name: LibreChat
     ports:
       - "${PORT:-3080}:${PORT:-3080}"
@@ -63,9 +61,7 @@ services:
       - "5433:5432"
       
   rag_api:
-    build:
-      context: .
-      dockerfile: Dockerfile.rag
+    image: u2sebau2/librechat-rag-custom:latest
     container_name: rag_api
     environment:
       - DB_HOST=vectordb
