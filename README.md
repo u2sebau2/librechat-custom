@@ -8,16 +8,18 @@ Versión personalizada de LibreChat con modificaciones específicas y todo pre-c
 
 ## 🚀 Instalación Rápida
 
-### 1. Clonar repositorio
+### 1. Clonar e instalar
 ```bash
 git clone https://github.com/u2sebau2/librechat-custom.git
 cd librechat-custom
+chmod +x install.sh
+./install.sh  # Crea carpetas y configura permisos
 ```
 
 ### 2. Configurar .env
 ```bash
-cp env.example .env
 # Editar .env con tus claves API
+nano .env  # o usa tu editor preferido
 ```
 
 ### 3. Levantar servicios
