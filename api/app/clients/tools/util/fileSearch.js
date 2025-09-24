@@ -219,48 +219,51 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
         })
         .join('\n---\n');
 
-        // Create optimized sources for the artifact - ORGANIZED BY FILE INDEX
-        // First, create sources grouped by unique file to match the anchor numbering
+        // Create optimized sources for the artifact - ONE ENTRY PER UNIQUE FILE
+        // Frontend expects sources[N] to correspond directly to turn0fileN
         const sourcesByFile = {};
         
-        // Group results by filename
+        // Group results by filename and create ONE representative entry per file
         formattedResults.forEach((result) => {
           const fileIndex = fileIndexMap[result.filename];
           if (!sourcesByFile[fileIndex]) {
-            sourcesByFile[fileIndex] = [];
+            // Create one entry per unique file (use first/best result for that file)
+            sourcesByFile[fileIndex] = {
+              type: 'file',
+              fileId: result.file_id,
+              content: result.content, // Use first chunk content as representative
+              fileName: result.filename,
+              relevance: 1.0 - result.distance,
+              pages: result.page ? [result.page] : [],
+              pageRelevance: result.page ? { [result.page]: 1.0 - result.distance } : {},
+              // Aggregate metadata from all chunks of this file
+              metadata: {
+                chunk_index: result.chunk_index,
+                total_chunks: result.total_chunks,
+                // Only add these if they exist
+                ...(result.metadata.last_modified && { last_modified: result.metadata.last_modified }),
+                ...(result.metadata.page_url && { page_url: result.metadata.page_url }),
+                ...(result.metadata.source && { source: result.metadata.source }),
+              },
+              // Only include search-specific data for hybrid search
+              ...(search_type === 'hybrid' && {
+                searchType: search_type,
+                fusionScore: result.fusion_score,
+                semanticRank: result.semantic_rank,
+                bm25Rank: result.bm25_rank,
+              }),
+            };
           }
-          sourcesByFile[fileIndex].push({
-            type: 'file',
-            fileId: result.file_id,
-            content: result.content,
-            fileName: result.filename,
-            relevance: 1.0 - result.distance,
-            pages: result.page ? [result.page] : [],
-            pageRelevance: result.page ? { [result.page]: 1.0 - result.distance } : {},
-            // Only include essential metadata
-            metadata: {
-              chunk_index: result.chunk_index,
-              total_chunks: result.total_chunks,
-              // Only add these if they exist
-              ...(result.metadata.last_modified && { last_modified: result.metadata.last_modified }),
-              ...(result.metadata.page_url && { page_url: result.metadata.page_url }),
-              ...(result.metadata.source && { source: result.metadata.source }),
-            },
-            // Only include search-specific data for hybrid search
-            ...(search_type === 'hybrid' && {
-              searchType: search_type,
-              fusionScore: result.fusion_score,
-              semanticRank: result.semantic_rank,
-              bm25Rank: result.bm25_rank,
-            }),
-          });
+          // If file already exists in sources, could update with better relevance or aggregate data
+          // For now, keep the first occurrence (could be enhanced to keep best relevance)
         });
         
-        // Convert to flat array ordered by file index (turn0file0 = sources[0], turn0file1 = sources[1], etc.)
+        // Create sources array with exactly one entry per file, ordered by fileIndex
+        // This ensures sources[0] = turn0file0, sources[1] = turn0file1, etc.
         const sources = [];
         for (let i = 0; i < uniqueFiles.length; i++) {
           if (sourcesByFile[i]) {
-            sources.push(...sourcesByFile[i]);
+            sources.push(sourcesByFile[i]);
           }
         }
 
