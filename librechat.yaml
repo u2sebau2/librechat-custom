@@ -1,12 +1,6 @@
 # LibreChat Configuration
 version: 1.2.1
 
-
-
-defaultModel:
-  endpoint: "bedrock"
-  model: "us.anthropic.claude-sonnet-4-20250514-v1:0"
-
 # Interface configuration
 interface:
   # ==================== CONFIGURACIÓN DE CONVERSACIONES ====================
@@ -50,6 +44,10 @@ endpoints:
   
   # Configuración para conversaciones directas con Bedrock
   bedrock:
+    # Modelo por defecto para Bedrock
+    models:
+      default: ["us.anthropic.claude-sonnet-4-20250514-v1:0"]
+      fetch: false  # No buscar modelos dinámicamente
     # Herramientas disponibles para conversaciones directas (solo Nova Canvas + búsquedas)
     tools: ["nova-canvas"]
     streamRate: 0  # Streaming sin delays para máxima fluidez
