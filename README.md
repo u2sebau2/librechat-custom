@@ -1,64 +1,66 @@
-# LibreChat Custom - Versión Personalizada
+# LibreChat Custom
 
-Versión personalizada de LibreChat con modificaciones específicas y todo pre-compilado.
+Versión personalizada de LibreChat con frontend pre-compilado, búsqueda híbrida en español y optimizaciones de rendimiento.
 
-🐳 **Imágenes Docker disponibles en Docker Hub:**
-- `u2sebau2/librechat-custom:latest`
-- `u2sebau2/librechat-rag-custom:latest`
+## 🚀 Instalación en 3 pasos
 
-## 🚀 Instalación Rápida
-
-### 1. Clonar e instalar
 ```bash
+# 1. Clonar repositorio
 git clone https://github.com/u2sebau2/librechat-custom.git
 cd librechat-custom
-chmod +x install.sh
-./install.sh  # Crea carpetas y configura permisos
+
+# 2. Configurar
+cp env.example .env
+nano .env  # Editar con tus API keys
+
+# 3. Iniciar
+./APPLY-BOLD-SYSTEM.sh
 ```
 
-### 2. Configurar .env
-```bash
-# Editar .env con tus claves API
-nano .env  # o usa tu editor preferido
-```
-
-### 3. Levantar servicios
-```bash
-docker-compose -f docker-compose.production.yml up -d
-```
-
-La aplicación estará en `http://localhost:3080`
+**¡Listo!** Accede a `http://localhost:3080`
 
 ## 📋 Características
 
-- Frontend pre-compilado
-- Integración Amazon Bedrock (Nova Canvas)
-- RAG API con búsqueda híbrida  
-- Módulo administración de conversaciones
-- Interfaz en español
-- Optimizaciones de rendimiento
+✅ **Pre-compilado** - Sin necesidad de `npm run frontend`  
+✅ **Amazon Bedrock** - Integración completa con Nova Canvas  
+✅ **RAG Híbrido** - Búsqueda semántica + BM25 en español  
+✅ **Citas en negrita** - Referencias naturales **filename.ext**  
+✅ **Interfaz español** - Completamente localizada  
+✅ **Datos persistentes** - Logs, uploads, MongoDB en volúmenes locales  
 
-## 🐳 Comandos Docker
+## 🐳 Imágenes Docker
+
+- `u2sebau2/librechat-custom:latest` - LibreChat completo
+- `u2sebau2/librechat-rag-custom:latest` - RAG API con híbrido search
+
+## 📊 Comandos útiles
 
 ```bash
 # Ver logs
 docker-compose -f docker-compose.production.yml logs -f
 
-# Detener
-docker-compose -f docker-compose.production.yml down
+# Reiniciar servicios  
+docker-compose -f docker-compose.production.yml restart
 
-# Reconstruir
-docker-compose -f docker-compose.production.yml build --no-cache
+# Detener todo
+docker-compose -f docker-compose.production.yml down
 ```
 
-## 📁 Estructura
-- `api/` - Backend modificado
-- `client/dist/` - Frontend compilado
-- `rag_api/` - API RAG personalizada
-- `docker-compose.production.yml` - Config Docker
-- `librechat.yaml` - Config LibreChat
+## 📁 Configuración
 
-## ⚠️ Importante
-- Configurar `.env` antes de iniciar
-- Hacer backup de: `data-node/`, `uploads/`
-- Puerto por defecto: 3080
+- **Puerto**: 3080 (configurable en `.env`)
+- **Datos**: Carpetas `logs/`, `uploads/`, `images/`, `data-node/`
+- **Config**: `librechat.yaml` (modelo Bedrock por defecto)
+
+## 🔧 Mantenimiento
+
+```bash
+# Actualizar a nueva versión
+git pull
+docker pull u2sebau2/librechat-custom:latest  
+docker pull u2sebau2/librechat-rag-custom:latest
+docker-compose -f docker-compose.production.yml up -d --force-recreate
+```
+
+---
+**LibreChat Custom** - Listo para producción en minutos
