@@ -25,6 +25,11 @@ RUN npm install --force \
 # Aplicar el patch de AWS para citas de Bedrock
 RUN node /app/langchain-aws-citation-patch-v4.js
 
+# Crear directorios necesarios y dar permisos
+RUN mkdir -p /app/api/logs /app/uploads /app/client/public/images && \
+    chown -R node:node /app/api/logs /app/uploads /app/client/public/images && \
+    chmod -R 777 /app/api/logs /app/uploads /app/client/public/images
+
 # Configurar variables de entorno para optimización
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV UV_THREADPOOL_SIZE=128
