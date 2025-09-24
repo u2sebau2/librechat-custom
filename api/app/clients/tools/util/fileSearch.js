@@ -182,7 +182,8 @@ const createFileSearchTool = async ({ req, files, entity_id }) => {
         });
 
         // Create file mapping for consistent numbering (each unique file gets one number)
-        const uniqueFiles = [...new Set(formattedResults.map(result => result.filename))];
+        // Use ALPHABETICAL ORDER to ensure consistency across different searches in same conversation
+        const uniqueFiles = [...new Set(formattedResults.map(result => result.filename))].sort();
         const fileIndexMap = {};
         uniqueFiles.forEach((filename, index) => {
           fileIndexMap[filename] = index;
