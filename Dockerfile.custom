@@ -20,12 +20,13 @@ RUN npm install --legacy-peer-deps \
     @aws-sdk/client-comprehend \
     @aws-sdk/client-bedrock-runtime \
     @langchain/aws@^0.1.15 \
-    langchain@^0.3.5 \
-    @langchain/core \
-    @langchain/community \
-    @langchain/openai \
+    langchain@0.2.20 \
+    @langchain/core@^0.3.62 \
+    @langchain/community@^0.3.47 \
+    @langchain/openai@^0.5.18 \
     @langchain/anthropic \
-    @langchain/google-genai
+    @langchain/google-genai@^0.2.13 \
+    @langchain/textsplitters@^0.1.0
 
 # Aplicar el patch de AWS para citas de Bedrock
 RUN node /app/langchain-aws-citation-patch-v4.js
