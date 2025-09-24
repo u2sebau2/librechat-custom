@@ -2,11 +2,15 @@
 
 Versión personalizada de LibreChat con modificaciones específicas y todo pre-compilado.
 
+🐳 **Imágenes Docker disponibles en Docker Hub:**
+- `u2sebau2/librechat-custom:latest`
+- `u2sebau2/librechat-rag-custom:latest`
+
 ## 🚀 Instalación Rápida
 
 ### 1. Clonar repositorio
 ```bash
-git clone https://github.com/TU_USUARIO/librechat-custom.git
+git clone https://github.com/u2sebau2/librechat-custom.git
 cd librechat-custom
 ```
 
