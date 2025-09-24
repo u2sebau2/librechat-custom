@@ -13,13 +13,19 @@ COPY --chown=node:node packages/client/dist /app/packages/client/dist
 COPY --chown=node:node packages/api/dist /app/packages/api/dist
 COPY --chown=node:node packages/data-schemas/dist /app/packages/data-schemas/dist
 
-# Instalar dependencias necesarias para AWS y patches
+# Instalar TODAS las dependencias necesarias
 RUN npm install --legacy-peer-deps \
     @aws-sdk/client-s3 \
     @aws-sdk/client-textract \
     @aws-sdk/client-comprehend \
     @aws-sdk/client-bedrock-runtime \
-    @langchain/aws@^0.1.15
+    @langchain/aws@^0.1.15 \
+    langchain@^0.3.5 \
+    @langchain/core \
+    @langchain/community \
+    @langchain/openai \
+    @langchain/anthropic \
+    @langchain/google-genai
 
 # Aplicar el patch de AWS para citas de Bedrock
 RUN node /app/langchain-aws-citation-patch-v4.js
@@ -32,3 +38,5 @@ ENV HOST=0.0.0.0
 
 # Usar el comando del backend directamente (sin compilar)
 CMD ["npm", "run", "backend"]
+
+
