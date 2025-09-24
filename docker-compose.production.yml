@@ -1,6 +1,8 @@
 services:
   api:
     image: u2sebau2/librechat-custom:latest
+    # NOTA: Si sigues teniendo problemas de mapping, usa:
+    # image: u2sebau2/librechat-custom:fixed-mapping
     container_name: LibreChat
     ports:
       - "${PORT:-3080}:${PORT:-3080}"
